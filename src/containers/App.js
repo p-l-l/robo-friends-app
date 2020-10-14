@@ -1,55 +1,47 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import ErrorBoundry from '../components/ErrorBoundry'
 import './App.css';
 
-class App extends Component {
-    constructor() {
-        super();
-        this.state = { //State => Something that can change and affect our app.
-            robots: [],
-            searchfield: ''
-        }
-    }
+function App() {
+    
+    const [robots, setRobots] = useState([]); //Return piece of state and function that affects this state
+    const [searchfield, setSearchfield] = useState('');
 
-    componentDidMount() {
+    //By default React use the useEffect everytime it renders
+    useEffect(() => {
         fetch('https://jsonplaceholder.typicode.com/users')
         .then(response => {
             return response.json();
         })
         .then(users => {
-            this.setState({ robots: users });
+            setRobots(users);
         });
+    }, []); //In the array we pass value that says "Hey, only run useEffect when this value change", but empty array turns in into componentDidMount (called once)
+
+    const onSearchChange = (event) => {
+        setSearchfield(event.target.value);
     }
 
-    onSearchChange = (event) => {
-        this.setState({ searchfield: event.target.value });
-    }
+    const filteredRobots = robots.filter(robot => {
+        return robot.name.toLowerCase().includes(searchfield.toLowerCase());
+    });
 
-    render() {
-        const {robots, searchfield} = this.state;
-        const filteredRobots = robots.filter(robot => {
-            return robot.name.toLowerCase().includes(searchfield.toLowerCase());
-        });
-        
-        if(!robots.length) {
-            return <h1 className="tc f1">Loading...</h1>
-        } else {
-            return (
-                <div className="tc">
-                    <h1 className="f1">RoboFriends</h1>
-                    <SearchBox searchChange={this.onSearchChange} />
-                    <Scroll>
-                        <ErrorBoundry>
-                            <CardList robots={filteredRobots} />
-                        </ErrorBoundry>
-                    </Scroll>
-                </div>
-            );
-        }
-    };
+    return !robots.length ?
+    <h1 className="tc f1">Loading...</h1> :
+    (
+        <div className="tc">
+            <h1 className="f1">RoboFriends</h1>
+            <SearchBox searchChange={onSearchChange} />
+            <Scroll>
+                <ErrorBoundry>
+                    <CardList robots={filteredRobots} />
+                </ErrorBoundry>
+            </Scroll>
+        </div>
+    );
 }
 
 export default App;
