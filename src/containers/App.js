@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Header from '../components/Header';
 import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
@@ -41,7 +42,7 @@ class App extends Component {
         } else {
             return (
                 <div className="tc">
-                    <h1 className="f1">RoboFriends</h1>
+                    <Header></Header>
                     <SearchBox searchChange={onSearchChange} />
                     <Scroll>
                         <ErrorBoundry>
